@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resource :session
+  resources :passwords, param: :token
   root "rooteins#index"
   resources :rooteins, only: [:index, :show] do
     resources :completions, only: [:create, :destroy]
