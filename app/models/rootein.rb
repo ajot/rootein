@@ -1,0 +1,2 @@
+class Rootein < ApplicationRecord
+end
