@@ -48,11 +48,11 @@ Tip (motivational tips)
 - [x] Click a day to toggle completion (`button_to` with POST/DELETE)
 - [x] Show streak count — `current_streak` method on the model
 
-### Phase 3: Authentication
-- [ ] Use Rails 8 built-in `has_secure_password` + auth generator
-- [ ] Registration, login, logout
-- [ ] Scope rooteins to current user
-- [ ] Nav bar with greeting and navigation links
+### Phase 3: Authentication ✓ COMPLETE
+- [x] `bin/rails generate authentication` — User, Session, Current models + Authentication concern
+- [x] Registration, login, logout (cookie-based sessions stored in database)
+- [x] Added `user_id` to rooteins, scoped all queries through `Current.user.rooteins`
+- [x] Nav bar in application layout with greeting and logout link
 
 ### Phase 4: CRUD for Rooteins
 - [ ] New/Edit/Delete rootein forms

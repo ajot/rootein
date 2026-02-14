@@ -44,3 +44,15 @@
 ### 2026-02-14: Belt and suspenders for data integrity
 **Decision:** Validate uniqueness of completions at both the database level (compound unique index) and the application level (`validates :completed_on, uniqueness: { scope: :rootein_id }`).
 **Why:** The database index is the safety net — it prevents duplicates even if code bypasses Rails validations (raw SQL, race conditions, background jobs). The model validation gives friendly error messages. One without the other is incomplete.
+
+### 2026-02-14: Rails 8 built-in auth over Devise
+**Decision:** Use `bin/rails generate authentication` instead of the Devise gem.
+**Why:** Rails 8 ships with everything we need: `has_secure_password`, session management, password resets. No external dependency, no black-box magic. We understand every line of the generated code because it's plain Rails — controllers, models, views we can read and modify. DHH philosophy: prefer the framework's built-in tools.
+
+### 2026-02-14: Secure by default — require auth, then opt out
+**Decision:** The `Authentication` concern requires login on every page. Individual controllers opt out with `allow_unauthenticated_access`.
+**Why:** DHH philosophy — the secure default means you can't accidentally forget to protect a new page. Opting out is explicit and intentional. The alternative (opting in per-controller) is an invitation for security holes.
+
+### 2026-02-14: Authorization through scoping, not conditionals
+**Decision:** Use `Current.user.rooteins.find(params[:id])` instead of `Rootein.find(params[:id])` with a manual ownership check.
+**Why:** Scoping queries through the current user makes unauthorized access structurally impossible — the SQL WHERE clause enforces it. No `if rootein.user == current_user` check to forget. The wrong ID simply returns 404. Simpler code, stronger security.

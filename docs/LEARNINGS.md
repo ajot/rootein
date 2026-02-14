@@ -113,3 +113,40 @@ We validate uniqueness of completions at two levels: a compound unique index in 
 
 ### `before_action` for shared setup
 `before_action :set_rootein` runs a method before every action in the controller. Extracts shared logic (like finding the parent record) into one place instead of repeating it in every action.
+
+---
+
+## Phase 3: Authentication
+
+### Rails 8 auth generator
+`bin/rails generate authentication` creates the full auth stack: `User` model with `has_secure_password`, `Session` model (database-backed sessions), `Current` model (thread-safe global), `Authentication` concern, login/logout controllers, password reset mailer, and routes. No gems needed.
+
+### `has_secure_password`
+One line in the User model that gives you: bcrypt password hashing, `password` and `password_confirmation` virtual attributes, and an `authenticate` method. You set `password`, Rails stores `password_digest`. The plaintext is never saved.
+
+### `[FILTERED]` in console output
+Rails 8 automatically hides sensitive fields (`email_address`, `password_digest`) in console and log output. The data is in the database — it's just hidden from display to prevent credential leaks in logs or screenshots.
+
+### bcrypt hash anatomy
+`$2a$12$0pFy...` — `$2a$` = bcrypt algorithm, `$12$` = 12 rounds of hashing (cost factor). Each hash includes a unique salt, so two users with the same password get different digests. Even with database access, passwords can't be reversed.
+
+### `Current` — thread-safe global state
+`Current.user` gives you the logged-in user from anywhere (models, controllers, views, mailers). It's backed by `ActiveSupport::CurrentAttributes`, which is automatically reset between requests. The `Authentication` concern sets `Current.session` on each request, and `Current.user` delegates to it.
+
+### Authentication concern — secure by default (DHH philosophy)
+The concern adds `before_action :require_authentication` to `ApplicationController`, meaning every page requires login by default. Controllers opt *out* with `allow_unauthenticated_access` rather than opting in. Secure by default — you can't accidentally forget to protect a page.
+
+### Authorization through scoping (DHH philosophy)
+`Current.user.rooteins.find(params[:id])` instead of `Rootein.find(params[:id])`. The query is automatically scoped to `WHERE user_id = ?`. If the rootein doesn't belong to the logged-in user, Rails raises `RecordNotFound` (404). No explicit `if rootein.user == current_user` check needed. Simple, foolproof, and impossible to forget.
+
+### Migration with existing data — nullable first, backfill, then constrain
+When adding a foreign key to a table that already has rows, don't use `null: false` in the migration — it will fail because existing rows have `NULL` for the new column. Instead: (1) add the column as nullable, (2) backfill the data, (3) optionally add the NOT NULL constraint in a follow-up migration.
+
+### `bin/rails runner`
+Executes a one-liner with your full Rails environment loaded, without dropping into an interactive console. `bin/rails runner "Rootein.update_all(user_id: 1)"` — perfect for quick data fixes and deploy scripts.
+
+### Layout file and `yield`
+`application.html.erb` wraps every page. Shared UI like nav bars goes here. `<%= yield %>` is where each page's specific content gets injected. Wrap nav in `if authenticated?` so the login page doesn't show a broken nav.
+
+### `ActiveModel::UnknownAttributeError`
+Rails rejects attributes that don't match any column: `User.create!(email_adddres: ...)` raises an error immediately. Catches typos early instead of silently ignoring them.

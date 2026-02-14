@@ -1,4 +1,5 @@
 class Rootein < ApplicationRecord
+  belongs_to :user
   has_many :completions, dependent: :destroy
   validates :name, presence: true
 
