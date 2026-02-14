@@ -1,10 +1,30 @@
-<div>
-  <h1 class="font-bold text-4xl">Rooteins#index</h1>
-  <p>You have <%= @rooteins.count %> rooteins.</p>
-  <ol class="list-decimal list-inside">
-  <% @rooteins.each do |rootein| %>
-    <li><strong><%= rootein.name %></strong> — started <%= rootein.created_at.strftime("%B %d, %Y")
-  %></li>
+<div class="max-w-2xl mx-auto mt-10">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">My Rooteins</h1>
+    <%= link_to "New Rootein", new_rootein_path, class: "bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm" %>
+  </div>
+
+  <% if @rooteins.any? %>
+    <div class="space-y-3">
+      <% @rooteins.each do |rootein| %>
+        <div class="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4">
+          <div>
+            <%= link_to rootein.name, rootein_path(rootein), class: "font-semibold text-lg hover:text-green-600" %>
+            <p class="text-sm text-gray-500">
+              Started <%= rootein.created_at.strftime("%B %d, %Y") %>
+              · Streak: <span class="font-bold text-green-600"><%= rootein.current_streak %> days</span>
+              <% unless rootein.active? %>
+                <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">paused</span>
+              <% end %>
+            </p>
+          </div>
+          <div class="flex items-center gap-3">
+            <%= link_to "Edit", edit_rootein_path(rootein), class: "text-sm text-blue-600 hover:underline" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-gray-500 text-center py-10">No rooteins yet. Create your first one!</p>
   <% end %>
-  </ol>
 </div>

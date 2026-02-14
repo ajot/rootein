@@ -150,3 +150,31 @@ Executes a one-liner with your full Rails environment loaded, without dropping i
 
 ### `ActiveModel::UnknownAttributeError`
 Rails rejects attributes that don't match any column: `User.create!(email_adddres: ...)` raises an error immediately. Catches typos early instead of silently ignoring them.
+
+---
+
+## Phase 4: CRUD for Rooteins
+
+### `turbo_confirm` — confirmation dialogs without JavaScript
+`data: { turbo_confirm: "Are you sure?" }` on a `button_to` or `link_to` makes Turbo intercept the click and show a browser `confirm()` dialog. If the user clicks "OK," it submits. "Cancel" does nothing. This is Hotwire's philosophy: behavior through HTML attributes, not custom JS. The old Rails UJS equivalent was `data: { confirm: "..." }` — Rails 8 replaced UJS with Turbo.
+
+### Flash messages — the one-time message bus
+Three connected pieces: (1) Controller sets the flash: `redirect_to @rootein, notice: "Rootein created!"` stores the message in the session cookie. (2) Layout reads it: `<% if notice %>` displays the message. (3) Flash auto-clears after one request — it survives the redirect, shows once, then self-destructs. This is why it lives in `application.html.erb` — it needs to work on every page. `notice` (green/success) and `alert` (red/error) are the two Rails conventions.
+
+### `form_with(model: rootein)` — one form, two behaviors
+Rails inspects the model to decide everything: `rootein.new_record?` → POST to `/rooteins` (create). `rootein.persisted?` → PATCH to `/rooteins/1` (update). The submit button text auto-changes too: "Create Rootein" vs "Update Rootein." Convention over configuration at its finest.
+
+### Partials (underscore-prefixed files)
+`_form.html.erb` is a **partial** — a reusable view fragment. Both `new.html.erb` and `edit.html.erb` call `<%= render "form", rootein: @rootein %>` to share the same form. The local variable `rootein:` is passed in explicitly so the partial doesn't depend on instance variables. DRY without abstraction overhead.
+
+### Strong Parameters — `params.expect`
+`params.expect(rootein: [:name, :active, :reminder_time, :remind_on_slack])` whitelists which attributes can be mass-assigned. Without this, a malicious user could POST `user_id: 999` and reassign a rootein to someone else. Rails 8's `expect` is stricter than the older `require/permit` pattern — it raises if the parameter structure doesn't match.
+
+### `render :new, status: :unprocessable_entity` — re-render on failure
+When validation fails, we re-render the form (not redirect). This preserves the user's input and shows error messages inline. The `422 Unprocessable Entity` status tells Turbo not to cache or push this response into the history — the user stays on the form with their errors visible.
+
+### Boolean columns get `?` methods for free
+Rails automatically creates a `?` method for every boolean column. `rootein.active?` returns `true`/`false`. You never need to write `rootein.active == true`. This works for any boolean: `remind_on_slack?`, `admin?`, etc.
+
+### Database defaults backfill existing rows
+`add_column :rooteins, :active, :boolean, default: true, null: false` — Postgres applies the default to all existing rows during the migration. No manual backfill needed (unlike adding a foreign key). Use defaults for booleans and simple values; use the nullable-then-backfill pattern for foreign keys.

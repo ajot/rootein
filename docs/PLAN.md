@@ -54,11 +54,15 @@ Tip (motivational tips)
 - [x] Added `user_id` to rooteins, scoped all queries through `Current.user.rooteins`
 - [x] Nav bar in application layout with greeting and logout link
 
-### Phase 4: CRUD for Rooteins
-- [ ] New/Edit/Delete rootein forms
-- [ ] Name field with character counter (Stimulus)
-- [ ] Reminder time picker, "Remind me when slacking" checkbox
-- [ ] Manage page — table of all rooteins with active toggle, edit/delete
+### Phase 4: CRUD for Rooteins ✓ COMPLETE
+- [x] Added `active`, `reminder_time`, `remind_on_slack` columns to rooteins
+- [x] Full resourceful routes (`resources :rooteins` — all 7 actions)
+- [x] Controller with `new`, `create`, `edit`, `update`, `destroy` + strong params
+- [x] Shared `_form.html.erb` partial (name, active toggle, reminder time, slack checkbox)
+- [x] New/Edit views with validation errors, delete with `turbo_confirm`
+- [x] Revamped index page — cards with streak count, paused badge, edit links, "New Rootein" button
+- [x] Flash messages (notice/alert) in application layout
+- [ ] Name field with character counter (Stimulus) — deferred to later
 
 ### Phase 5: Dashboard (Home)
 - [ ] Personalized greeting (random language)

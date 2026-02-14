@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   root "rooteins#index"
-  resources :rooteins, only: [:index, :show] do
+  resources :rooteins do
     resources :completions, only: [:create, :destroy]
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

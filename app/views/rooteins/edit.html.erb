@@ -1,0 +1,9 @@
+<div class="max-w-md mx-auto mt-10">
+  <h1 class="text-2xl font-bold mb-6">Edit <%= @rootein.name %></h1>
+  <%= render "form", rootein: @rootein %>
+  <div class="mt-6 pt-4 border-t border-gray-200">
+    <%= button_to "Delete this rootein", rootein_path(@rootein), method: :delete,
+        class: "text-red-500 hover:underline text-sm cursor-pointer",
+        data: { turbo_confirm: "Are you sure? This will delete all completions too." } %>
+  </div>
+</div>
