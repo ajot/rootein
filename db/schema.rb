@@ -10,13 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_14_030533) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_14_115300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "completions", force: :cascade do |t|
+    t.bigint "rootein_id", null: false
+    t.date "completed_on"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["rootein_id", "completed_on"], name: "index_completions_on_rootein_id_and_completed_on", unique: true
+    t.index ["rootein_id"], name: "index_completions_on_rootein_id"
+  end
 
   create_table "rooteins", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
+
+  add_foreign_key "completions", "rooteins"
 end
