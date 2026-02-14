@@ -24,14 +24,24 @@
         <div></div>
       <% end %>
 
-      <!-- Day cells -->
+<!-- Day cells -->
       <% (@date.beginning_of_month..@date.end_of_month).each do |day| %>
         <% completed = @completions.include?(day) %>
-        <div class="p-2 rounded-lg text-sm
-          <%= completed ? 'bg-green-500 text-white font-bold' : 'bg-gray-100 hover:bg-gray-200'
-  %>">
-          <%= day.day %>
-        </div>
+        <% if completed %>
+          <% completion = @rootein.completions.find_by(completed_on: day) %>
+          <%= button_to rootein_completion_path(@rootein, completion),
+              method: :delete,
+              class: "p-2 rounded-lg text-sm w-full bg-green-500 text-white font-bold hover:bg-green-600 cursor-pointer" do %>
+            <%= day.day %>
+          <% end %>
+        <% else %>
+          <%= button_to rootein_completions_path(@rootein),
+              params: { completed_on: day },
+              class: "p-2 rounded-lg text-sm w-full bg-gray-100 hover:bg-gray-200 cursor-pointer" do %>
+            <%= day.day %>
+          <% end %>
+        <% end %>
       <% end %>
     </div>
   </div>
+</div>
