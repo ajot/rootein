@@ -1,0 +1,37 @@
+<div class="max-w-md mx-auto mt-10">
+    <h1 class="text-2xl font-bold mb-2"><%= @rootein.name %></h1>
+
+    <!-- Month navigation -->
+    <div class="flex items-center justify-between mb-4">
+      <%= link_to "← Prev", rootein_path(@rootein, date: @date.prev_month),
+          class: "text-blue-600 hover:underline" %>
+      <span class="font-semibold text-lg"><%= @date.strftime("%B %Y") %></span>
+      <%= link_to "Next →", rootein_path(@rootein, date: @date.next_month),
+          class: "text-blue-600 hover:underline" %>
+    </div>
+
+    <!-- Day-of-week headers -->
+    <div class="grid grid-cols-7 text-center text-sm font-medium text-gray-500 mb-1">
+      <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day_name| %>
+        <div><%= day_name %></div>
+      <% end %>
+    </div>
+
+    <!-- Calendar grid -->
+    <div class="grid grid-cols-7 text-center gap-1">
+      <!-- Empty cells before the 1st -->
+      <% @date.beginning_of_month.wday.times do %>
+        <div></div>
+      <% end %>
+
+      <!-- Day cells -->
+      <% (@date.beginning_of_month..@date.end_of_month).each do |day| %>
+        <% completed = @completions.include?(day) %>
+        <div class="p-2 rounded-lg text-sm
+          <%= completed ? 'bg-green-500 text-white font-bold' : 'bg-gray-100 hover:bg-gray-200'
+  %>">
+          <%= day.day %>
+        </div>
+      <% end %>
+    </div>
+  </div>
