@@ -31,7 +31,8 @@
             <%= link_to "My Rooteins", rooteins_path, class: "text-sm text-gray-600 hover:text-green-600" %>
           </div>
           <div class="flex items-center gap-4 text-sm text-gray-600">
-            <span>Hello, <%= Current.user.email_address.split("@").first %>!</span>
+            <span>Hello, <%= Current.user.name.presence || Current.user.email_address.split("@").first %>!</span>
+            <%= link_to "Account", account_path, class: "text-gray-600 hover:text-green-600" %>
             <%= button_to "Log out", session_path, method: :delete, class: "text-red-500 hover:underline cursor-pointer" %>
           </div>
         </div>

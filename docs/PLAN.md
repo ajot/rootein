@@ -72,12 +72,12 @@ Tip (motivational tips)
 - [x] Scopes on Rootein: `active`, `slacking`, `on_target`
 - [x] Color-coded streak badges, "My Rooteins" link in nav bar
 
-### Phase 6: My Rooteins Page
-- [ ] Left sidebar: list of active rooteins with streak badges
-- [ ] Right side: calendar view for selected rootein
-- [ ] Click days to toggle completions (Turbo Frames)
-- [ ] Prev/Next month navigation
-- [ ] Motivational messages based on streak status
+### Phase 6: My Rooteins Page ✓ COMPLETE
+- [x] Two-panel layout: sidebar (rootein list with streak badges) + calendar
+- [x] Active rootein highlighted in sidebar with green background
+- [x] Click days to toggle completions (button_to POST/DELETE)
+- [x] Prev/Next month navigation
+- [x] Motivational messages based on streak thresholds (0, <7, <21, 21+)
 
 ### Phase 7: Account & Notifications
 - [ ] Account settings page with tabs (Account / Password / Notifications)

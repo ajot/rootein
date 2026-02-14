@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
   root "dashboard#show"
+  resource :account, only: [:show, :update], controller: "account"
   resources :rooteins do
     resources :completions, only: [:create, :destroy]
   end

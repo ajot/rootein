@@ -14,6 +14,7 @@ class DashboardController < ApplicationController
       "Hello", "Hola", "Bonjour", "Hej", "Ciao",
       "Namaste", "Konnichiwa", "Olá", "Salaam", "Aloha"
     ]
-    "#{greetings.sample}, #{Current.user.email_address.split('@').first}!"
+    name = Current.user.name.presence || Current.user.email_address.split('@').first
+    "#{greetings.sample}, #{name}!"
   end
 end
