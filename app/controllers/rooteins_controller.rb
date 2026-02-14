@@ -6,6 +6,7 @@ class RooteinsController < ApplicationController
   end
 
   def show
+    @rooteins = Current.user.rooteins.active
     @date = params[:date] ? Date.parse(params[:date]) : Date.today
     @completions = @rootein.completions
       .where(completed_on: @date.beginning_of_month..@date.end_of_month)
