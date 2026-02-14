@@ -1,0 +1,49 @@
+<div class="max-w-4xl mx-auto mt-10">
+  <h1 class="text-3xl font-bold mb-8"><%= @greeting %></h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Slacking -->
+    <div class="bg-red-50 border border-red-200 rounded-lg p-5">
+      <h2 class="text-lg font-semibold text-red-800 mb-3">You are slacking on</h2>
+      <% if @slacking.any? %>
+        <ul class="space-y-2">
+          <% @slacking.each do |rootein| %>
+            <li>
+              <%= link_to rootein.name, rootein_path(rootein), class: "text-red-700 hover:underline font-medium" %>
+              <span class="text-xs text-red-500 ml-1">0 days</span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-red-400 text-sm italic">Nothing! You're on fire!</p>
+      <% end %>
+    </div>
+
+    <!-- On Target -->
+    <div class="bg-green-50 border border-green-200 rounded-lg p-5">
+      <h2 class="text-lg font-semibold text-green-800 mb-3">You are on target on</h2>
+      <% if @on_target.any? %>
+        <ul class="space-y-2">
+          <% @on_target.each do |rootein| %>
+            <li>
+              <%= link_to rootein.name, rootein_path(rootein), class: "text-green-700 hover:underline font-medium" %>
+              <span class="text-xs text-green-600 ml-1 bg-green-200 px-2 py-0.5 rounded-full font-bold"><%= rootein.current_streak %> days</span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="text-green-400 text-sm italic">Complete a rootein today to get started!</p>
+      <% end %>
+    </div>
+
+    <!-- Tip -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
+      <h2 class="text-lg font-semibold text-blue-800 mb-3">Rootein Tip</h2>
+      <% if @tip %>
+        <p class="text-blue-700 italic">"<%= @tip.body %>"</p>
+      <% else %>
+        <p class="text-blue-400 text-sm italic">No tips yet.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

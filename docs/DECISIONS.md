@@ -56,3 +56,11 @@
 ### 2026-02-14: Authorization through scoping, not conditionals
 **Decision:** Use `Current.user.rooteins.find(params[:id])` instead of `Rootein.find(params[:id])` with a manual ownership check.
 **Why:** Scoping queries through the current user makes unauthorized access structurally impossible — the SQL WHERE clause enforces it. No `if rootein.user == current_user` check to forget. The wrong ID simply returns 404. Simpler code, stronger security.
+
+### 2026-02-14: Presentation logic in the controller, not the model
+**Decision:** Put `random_greeting` as a private method in `DashboardController`, not on User or any model.
+**Why:** It's presentation logic — how to greet the user on a specific page. Models hold domain logic (what a rootein *is*, how streaks work). Controllers coordinate and prepare data for views. Greeting doesn't describe anything about the domain. If it grows complex later, extract to a helper module.
+
+### 2026-02-14: Dashboard as a separate controller
+**Decision:** Created `DashboardController` instead of adding a dashboard action to `RooteinsController`.
+**Why:** The dashboard aggregates multiple data sources (slacking rooteins, on-target rooteins, random tip, greeting). It's its own concept, not a view of the rooteins resource. One controller per concept — Rails convention.

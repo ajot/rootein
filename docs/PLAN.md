@@ -64,13 +64,13 @@ Tip (motivational tips)
 - [x] Flash messages (notice/alert) in application layout
 - [ ] Name field with character counter (Stimulus) — deferred to later
 
-### Phase 5: Dashboard (Home)
-- [ ] Personalized greeting (random language)
-- [ ] Three-column layout:
-  - "You are slacking on" (red) — 0-day streak rooteins
-  - "You are on target on" (green) — active streak rooteins
-  - "Rootein Tip" (blue) — random tip from tips table
-- [ ] Color-coded streak badges
+### Phase 5: Dashboard (Home) ✓ COMPLETE
+- [x] `DashboardController` with `show` action, root route updated to `dashboard#show`
+- [x] Personalized greeting (random language via `.sample`)
+- [x] Three-column layout: slacking (red), on target (green), tip (blue)
+- [x] `Tip` model with seed data (10 motivational tips, `find_or_create_by!`)
+- [x] Scopes on Rootein: `active`, `slacking`, `on_target`
+- [x] Color-coded streak badges, "My Rooteins" link in nav bar
 
 ### Phase 6: My Rooteins Page
 - [ ] Left sidebar: list of active rooteins with streak badges

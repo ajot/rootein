@@ -178,3 +178,25 @@ Rails automatically creates a `?` method for every boolean column. `rootein.acti
 
 ### Database defaults backfill existing rows
 `add_column :rooteins, :active, :boolean, default: true, null: false` — Postgres applies the default to all existing rows during the migration. No manual backfill needed (unlike adding a foreign key). Use defaults for booleans and simple values; use the nullable-then-backfill pattern for foreign keys.
+
+---
+
+## Phase 5: Dashboard
+
+### `.sample` — pick a random element from an array
+`greetings.sample` returns a random element each time it's called. Each page load shows a different greeting: "Hola, you!", "Konnichiwa, you!", "Bonjour, you!" etc. Simple, built-in Ruby — no gem needed for basic randomness.
+
+### Presentation logic belongs in the controller, not the model
+The `random_greeting` method lives as a private method in `DashboardController`, not on any model. It's presentation logic (how to greet the user), not domain logic (what a rootein *is*). If it grew more complex (greeting based on time of day, user's locale), you'd extract it to a helper module. For now, a private method is the right size. Rule of thumb: models = domain logic, controllers = coordination + presentation setup, views = display.
+
+### Scopes — named query shortcuts
+`scope :active, -> { where(active: true) }` lets you write `Current.user.rooteins.active` instead of `Current.user.rooteins.where(active: true)`. Reads like English and chains with other queries. The `->` is a lambda — a stored block of code that only runs when called.
+
+### `find_or_create_by!` — idempotent seeding
+Used in `db/seeds.rb` to prevent duplicates when seeding. It finds an existing record by the given attributes, or creates one if it doesn't exist. Run `db:seed` ten times and you still get the same data. The `!` raises on validation failure.
+
+### `Tip.order("RANDOM()").first` — random row from Postgres
+Postgres picks a random row each time. Fine for small tables (our 10 tips). For millions of rows you'd use `Tip.offset(rand(Tip.count)).first` to avoid sorting the whole table.
+
+### Separate controllers for separate concepts
+The dashboard is its own controller, not shoehorned into `RooteinsController`. It aggregates data from multiple sources (rooteins split by status + a random tip). One controller per resource/concept is the Rails convention.
