@@ -40,11 +40,13 @@ Tip (motivational tips)
 - [x] Tested in `rails console` — created 2 rooteins, verified CRUD works
 - [x] Generated RooteinsController, created index view, set root route — rooteins showing on page
 
-### Phase 2: The Calendar ← IN PROGRESS
-- [ ] Generate `Completion` model (rootein_id, completed_on, unique index)
-- [ ] Build a simple calendar view for a single rootein (ERB)
-- [ ] Click a day to toggle completion (Turbo Stream for instant feedback)
-- [ ] Show streak count — the core mechanic of the app
+### Phase 2: The Calendar ✓ COMPLETE
+- [x] Generate `Completion` model (rootein_id, completed_on, unique index)
+- [x] Wire up associations (`has_many`/`belongs_to`) and validations
+- [x] Add resourceful routes (`resources :rooteins` with nested `completions`)
+- [x] Build a simple calendar view for a single rootein (ERB + Tailwind grid)
+- [x] Click a day to toggle completion (`button_to` with POST/DELETE)
+- [x] Show streak count — `current_streak` method on the model
 
 ### Phase 3: Authentication
 - [ ] Use Rails 8 built-in `has_secure_password` + auth generator

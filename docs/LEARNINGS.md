@@ -83,3 +83,33 @@ Without `scope`, Rails would enforce uniqueness of `completed_on` across ALL com
 
 ### Association methods fill in foreign keys automatically
 `rootein.completions.create!(completed_on: Date.today)` — you don't need to pass `rootein_id`. Because you're calling through the association, Rails fills in the foreign key for you. That's the power of `has_many`.
+
+### `resources` and nested routes
+`resources :rooteins, only: [:index, :show]` generates RESTful routes. Adding `do ... end` with nested `resources :completions` creates URLs like `/rooteins/1/completions`. The parent ID is baked into the URL and available as `params[:rootein_id]` in the nested controller. Use `only:` to limit to just the actions you need.
+
+### `button_to` vs `link_to`
+`link_to` generates a GET request (for navigation). `button_to` generates a mini `<form>` with the correct HTTP method (POST/DELETE) and an automatic CSRF token. Use `button_to` whenever you're creating or destroying data — Rails rejects POST/DELETE without a valid CSRF token as XSS protection.
+
+### ERB `do` must stay on the same line
+When using `button_to ... do` or any block in ERB, the `do` keyword must be on the same line as the method call's last argument (inside the same `<%= %>` tag). If `do` wraps to a new line, ERB's parser sees it as a separate statement and throws `syntax error, unexpected 'do'`. This doesn't happen in plain `.rb` files — ERB's line-by-line compilation is stricter.
+
+### `.pluck` vs loading full objects
+`@rootein.completions.pluck(:completed_on)` returns just an array of dates — one column, no model objects. Much lighter than loading full `Completion` records when you only need to check which days are completed.
+
+### `.to_set` for O(1) lookups
+Converting an array to a `Set` makes `.include?` checks instant (O(1) hash lookup) instead of scanning the array (O(n)). Useful when you're checking membership in a loop — like checking 31 calendar days against completed dates.
+
+### Domain logic belongs in the model (DHH philosophy)
+The `current_streak` method lives in `Rootein`, not in the controller or view. The streak is a property of a rootein — it's domain logic. DHH's philosophy: models are where your business logic lives. Controllers should only coordinate (fetch data, redirect). Views should only display. By putting it on the model, you can call `rootein.current_streak` from anywhere — console, controller, view, tests, mailers. If you find yourself writing logic in a controller that describes *what something is* rather than *what to do next*, it belongs in the model.
+
+### Start simple, upgrade when you feel the pain (DHH philosophy)
+We used `redirect_to` after toggling a completion instead of Turbo Streams. A full-page redirect works fine. If it feels slow later, we upgrade to Turbo Streams for instant no-reload feedback. Don't optimize before there's a problem. This applies everywhere — don't add caching until it's slow, don't add background jobs until the request is too long, don't add a gem until the built-in way hurts.
+
+### Belt and suspenders for data integrity (DHH philosophy)
+We validate uniqueness of completions at two levels: a compound unique index in the database AND `validates :completed_on, uniqueness: { scope: :rootein_id }` in the model. The database index is the hard safety net — it prevents duplicates even if code bypasses Rails (raw SQL, race conditions, concurrent requests). The model validation gives user-friendly error messages. One without the other is incomplete. This "defense in depth" pattern applies to any critical data constraint.
+
+### `1.day` — ActiveSupport time extensions
+`Date.today - 1.day` gives you yesterday. Rails extends Ruby's numbers so you can write `3.hours`, `2.weeks`, `1.month.ago`, `30.minutes.from_now`. Makes time math readable.
+
+### `before_action` for shared setup
+`before_action :set_rootein` runs a method before every action in the controller. Extracts shared logic (like finding the parent record) into one place instead of repeating it in every action.

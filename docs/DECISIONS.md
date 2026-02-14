@@ -32,3 +32,15 @@
 ### 2026-02-13: Start with the smallest thing that works
 **Decision:** Build in phases, starting with a single Rootein on a page, no auth, no styling.
 **Why:** DHH philosophy — don't over-plan. Feel the pain before adding complexity.
+
+### 2026-02-14: Business logic lives in the model, not the controller
+**Decision:** Put the `current_streak` calculation in the `Rootein` model, not in the controller or a helper.
+**Why:** DHH philosophy — models are where your domain logic lives. The streak is a property of a rootein. By putting it on the model, you can call `rootein.current_streak` from anywhere — console, controller, view, tests, mailers. Controllers should only coordinate (fetch data, redirect). Views should only display. The model is the source of truth.
+
+### 2026-02-14: Simple redirect over Turbo Streams (for now)
+**Decision:** Use `redirect_to` after toggling a completion instead of Turbo Streams.
+**Why:** DHH philosophy — start simple, add complexity when you feel the pain. A full-page redirect works. If the page feels slow later, upgrade to Turbo Streams. Don't optimize before there's a problem.
+
+### 2026-02-14: Belt and suspenders for data integrity
+**Decision:** Validate uniqueness of completions at both the database level (compound unique index) and the application level (`validates :completed_on, uniqueness: { scope: :rootein_id }`).
+**Why:** The database index is the safety net — it prevents duplicates even if code bypasses Rails validations (raw SQL, race conditions, background jobs). The model validation gives friendly error messages. One without the other is incomplete.
