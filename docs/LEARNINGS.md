@@ -62,3 +62,24 @@ Migrations are like version control for your schema. Once run, they're "applied.
 - **development** — your local machine (`rootein_development` database)
 - **test** — used by `rails test` (`rootein_test` database)
 - **production** — the live app (DigitalOcean, configured later via environment variables)
+
+### `has_many` and `belongs_to` — the one-to-many pair
+`belongs_to :rootein` (in Completion) and `has_many :completions` (in Rootein) are two halves of one relationship. Once both are in place, you can traverse in either direction: `rootein.completions` returns all completions, `completion.rootein` returns the parent. Always define both sides.
+
+### `dependent: :destroy`
+Added to `has_many :completions, dependent: :destroy`. When a rootein is deleted, Rails automatically deletes all its completions too. Without this, you'd have orphaned rows in the completions table pointing to a rootein_id that no longer exists.
+
+### Belt and suspenders: database index + model validation
+The compound unique index in the migration prevents duplicate completions at the **database** level (hard crash). The `validates :completed_on, uniqueness: { scope: :rootein_id }` prevents them at the **application** level (friendly error message). Use both — the validation gives nice errors, the index is the safety net if code bypasses validations.
+
+### `uniqueness: { scope: :rootein_id }`
+Without `scope`, Rails would enforce uniqueness of `completed_on` across ALL completions globally. With `scope: :rootein_id`, it means "unique within a single rootein" — two different habits can be completed on the same day, but the same habit can't be marked twice.
+
+### `create` vs `create!` (bang methods)
+- `create` — fails silently, returns an unsaved object with `id: nil`. Call `.errors.full_messages` to see what went wrong.
+- `create!` — raises `ActiveRecord::RecordInvalid` exception immediately on failure.
+- **How to tell if a record saved:** check for `id: nil` (not saved) vs a real number (saved), or call `.persisted?`.
+- **Rule of thumb:** use `create!` in the console (loud failures), use `create` in controllers (so you can re-render forms with error messages).
+
+### Association methods fill in foreign keys automatically
+`rootein.completions.create!(completed_on: Date.today)` — you don't need to pass `rootein_id`. Because you're calling through the association, Rails fills in the foreign key for you. That's the power of `has_many`.
