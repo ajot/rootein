@@ -79,20 +79,28 @@ Tip (motivational tips)
 - [x] Prev/Next month navigation
 - [x] Motivational messages based on streak thresholds (0, <7, <21, 21+)
 
-### Phase 7: Account & Notifications
-- [ ] Account settings page with tabs (Account / Password / Notifications)
-- [ ] Email notification preferences
-- [ ] Time zone selection
+### Phase 7: Account & Notifications ✓ COMPLETE
+- [x] Added `name`, `time_zone`, `notification_email` columns to users
+- [x] `AccountController` with sectioned update (profile/password/notifications)
+- [x] Account settings page with three separate forms
+- [x] Time zone dropdown (`time_zone_select`), email notification toggle
+- [x] Nav bar uses user's name (with `.presence` fallback to email prefix)
+- [x] Dashboard greeting uses name when available
 
-### Phase 8: Email Reminders
-- [ ] Action Mailer for reminder emails
-- [ ] Solid Queue for background job processing
-- [ ] Daily job: find rooteins with reminders due, send emails
-- [ ] "Slacking" notification when streak broken for 3+ days
+### Phase 8: Email Reminders ✓ COMPLETE
+- [x] `ReminderMailer` with two emails: `rootein_reminder` and `slacking_alert` (HTML + text)
+- [x] `SendRemindersJob` — iterates users with notifications enabled, sends appropriate emails
+- [x] Solid Queue recurring schedule: `at 8am every day` in `config/recurring.yml`
+- [x] Slacking alert fires when streak broken for 3+ days
+- [x] Mailer previews at `/rails/mailers/reminder_mailer`
+- [ ] Add Resend gem for production email delivery — deferred to Phase 10
 
-### Phase 9: Landing Page
-- [ ] Public landing page (unauthenticated)
-- [ ] Tagline, feature highlights, signup CTA
+### Phase 9: Landing Page ✓ COMPLETE
+- [x] `LandingController` with `allow_unauthenticated_access`, redirects logged-in users to dashboard
+- [x] Public landing page at `/welcome` — tagline, three feature highlights, signup/login CTAs
+- [x] `RegistrationsController` — signup form with name, email, password
+- [x] Auto-login after registration (`start_new_session_for`)
+- [x] Login page links to signup, logout redirects to landing page
 
 ### Phase 10: Deployment
 - [ ] Dockerfile for DigitalOcean App Platform

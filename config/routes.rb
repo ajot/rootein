@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   resource :session
+  resource :registration, only: [:new, :create]
   resources :passwords, param: :token
+  get "welcome", to: "landing#show", as: :landing
   root "dashboard#show"
   resource :account, only: [:show, :update], controller: "account"
   resources :rooteins do
