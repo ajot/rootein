@@ -32,15 +32,15 @@ Tip (motivational tips)
 
 ## Build Phases
 
-### Phase 1: One Rootein in the Database ← IN PROGRESS
+### Phase 1: One Rootein in the Database ✓ COMPLETE
 - [x] `rails new . --css=tailwind --database=postgresql --name=rootein` (generated app in existing dir)
 - [x] Renamed app module to `RooteinApp` to free up `Rootein` for the model
 - [x] `bin/rails db:create` (created rootein_development and rootein_test databases)
 - [x] `bin/rails generate model Rootein name:string` + `db:migrate`
 - [x] Tested in `rails console` — created 2 rooteins, verified CRUD works
-- [ ] Generate a controller and show rooteins on a page — ugly, no auth, no styling
+- [x] Generated RooteinsController, created index view, set root route — rooteins showing on page
 
-### Phase 2: The Calendar
+### Phase 2: The Calendar ← IN PROGRESS
 - [ ] Generate `Completion` model (rootein_id, completed_on, unique index)
 - [ ] Build a simple calendar view for a single rootein (ERB)
 - [ ] Click a day to toggle completion (Turbo Stream for instant feedback)
