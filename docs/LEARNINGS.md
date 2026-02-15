@@ -274,6 +274,27 @@ The landing page uses `-mx-5 -mt-8` to counteract the layout's `px-5 pt-8` paddi
 
 ---
 
+## Stimulus — "The Modest JavaScript Framework"
+
+### What is Stimulus?
+Stimulus is a lightweight JavaScript framework created by the Basecamp/Hey team (DHH's company). It's part of the **Hotwire** stack that ships with Rails 8. Hotwire has two pieces: **Turbo** (makes page navigation fast, handles forms, streams HTML updates) and **Stimulus** (adds small, focused JS behaviors to server-rendered HTML). The key philosophy: HTML is the source of truth, not JavaScript. You don't build your UI in JS and render it to the DOM (like React). Instead, Rails renders the HTML on the server, and Stimulus sprinkles interactivity on top.
+
+### Three core concepts — controllers, targets, actions
+Stimulus has just three ideas, all wired through `data-` attributes in HTML:
+
+1. **Controllers** — a JS class that manages a piece of the page. `<div data-controller="carousel">` tells Stimulus: "find `carousel_controller.js` and connect it to this div."
+2. **Targets** — named references to DOM elements (replaces `querySelector`). `<img data-carousel-target="slide">` — in the controller, `this.slideTargets` gives you an array of all matching elements. Declared with `static targets = ["slide"]` at the top of the class.
+3. **Actions** — event handlers wired in HTML (replaces `addEventListener`). `<div data-action="dragstart->sortable#dragstart">` means: "when `dragstart` fires on this element, call the `dragstart()` method on the `sortable` controller."
+
+### Why Stimulus instead of React/Vue?
+Stimulus is intentionally tiny. It doesn't manage state, doesn't have a virtual DOM, and doesn't render HTML. It's for **behavior**, not **rendering**. With React/Vue, JavaScript builds everything (rendering + behavior + state). With Stimulus, the **server** (Rails ERB) builds the HTML — JS only adds behavior (clicks, timers, drag). This is why the carousel controller is 20 lines and the sortable controller is 50 lines. Stimulus doesn't try to do more than it needs to.
+
+### How we use it in Rootein
+- `carousel_controller.js` — `connect()` starts a 2-second timer, `disconnect()` cleans it up, `next()` cycles through `slide` targets by toggling `hidden`.
+- `sortable_controller.js` — handles drag-and-drop via HTML5 events (`dragstart`, `dragover`, `drop`), calculates drop position using `getBoundingClientRect()`, persists new order via `fetch()`.
+
+---
+
 ## Drag-and-Drop Reorder
 
 ### Stimulus `connect()` and `disconnect()` lifecycle

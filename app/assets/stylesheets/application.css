@@ -8,3 +8,41 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+/* Notebook: open-book effect with binding crease */
+.notebook {
+  transform: rotate(-1.5deg);
+  position: relative;
+}
+
+.notebook-spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 24px;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(0, 0, 0, 0.06) 35%,
+    rgba(0, 0, 0, 0.12) 50%,
+    rgba(0, 0, 0, 0.06) 65%,
+    transparent 100%
+  );
+}
+
+/* Subtle page curl shadows on each panel */
+.notebook-left {
+  box-shadow:
+    inset -8px 0 12px -8px rgba(0, 0, 0, 0.08),
+    -2px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.notebook-right {
+  box-shadow:
+    inset 8px 0 12px -8px rgba(0, 0, 0, 0.08),
+    2px 4px 12px rgba(0, 0, 0, 0.1);
+}
