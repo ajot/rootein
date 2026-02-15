@@ -4,6 +4,7 @@ class Rootein < ApplicationRecord
   validates :name, presence: true
 
   scope :active, -> { where(active: true) }
+  scope :ordered, -> { order(:position, :created_at) }
   scope :slacking, -> { active.select { |r| r.current_streak == 0 } }
   scope :on_target, -> { active.select { |r| r.current_streak > 0 } }
 

@@ -102,6 +102,16 @@ Tip (motivational tips)
 - [x] Auto-login after registration (`start_new_session_for`)
 - [x] Login page links to signup, logout redirects to landing page
 
+### Visual Overhaul ✓ COMPLETE
+- [x] Rebuilt all views to match the original 2009 Rootein design
+- [x] Dark navbars, blue gradients, orange section headers, streak badges
+- [x] Tab navigation (Dashboard / My Rooteins) with active state detection
+- [x] `streak_badge` and `streak_color` view helpers in `RooteinsHelper`
+- [x] Landing page image carousel (`carousel_controller.js` — auto-cycles every 2s)
+- [x] Drag-and-drop reorder on My Rooteins index (`sortable_controller.js` + `position` column)
+- [x] Dashboard greeting shows word + language (e.g., "Bienvenue" / French)
+- [x] Constrained landing page content width (`max-w-5xl`) with full-bleed backgrounds
+
 ### Phase 10: Deployment
 - [ ] Dockerfile for DigitalOcean App Platform
 - [ ] PostgreSQL managed database on DO
@@ -113,6 +123,8 @@ Tip (motivational tips)
 | Controller | Purpose |
 |-----------|---------|
 | `calendar_controller.js` | Handle day clicks, toggle completions via Turbo |
+| `carousel_controller.js` | Auto-cycle landing page hero images every 2 seconds |
+| `sortable_controller.js` | Drag-and-drop reorder on rooteins index, persists via PATCH |
 | `character_counter_controller.js` | Live character count on rootein name field |
 | `tabs_controller.js` | Tab switching on account page |
 

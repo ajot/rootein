@@ -1,77 +1,138 @@
-<div class="max-w-4xl mx-auto mt-10 flex gap-8">
-  <!-- Sidebar: rootein list -->
-  <div class="w-64 shrink-0">
-    <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">My Rooteins</h2>
-    <ul class="space-y-2">
-      <% @rooteins.each do |rootein| %>
-        <li>
-          <%= link_to rootein_path(rootein),
-              class: "block p-3 rounded-lg #{rootein == @rootein ? 'bg-green-50 border border-green-200' : 'hover:bg-gray-50'}" do %>
-            <span class="font-medium <%= rootein == @rootein ? 'text-green-700' : 'text-gray-800' %>"><%= rootein.name %></span>
-            <span class="text-xs ml-1 <%= rootein.current_streak > 0 ? 'text-green-600 bg-green-100' : 'text-gray-500 bg-gray-100' %> px-2 py-0.5 rounded-full font-bold"><%= rootein.current_streak %> days</span>
-          <% end %>
-        </li>
-      <% end %>
-    </ul>
+<div class="max-w-5xl mx-auto mt-6">
+  <!-- Add New Rootein link -->
+  <div class="text-right mb-4">
+    <%= link_to new_rootein_path, class: "text-green-600 hover:text-green-700 font-semibold" do %>
+      <span class="text-lg">+</span> Add New Rootein
+    <% end %>
   </div>
 
-  <!-- Main: calendar -->
-  <div class="flex-1 max-w-md">
-    <h1 class="text-2xl font-bold mb-2"><%= @rootein.name %></h1>
-    <p class="text-gray-600 mb-1">Current streak: <span class="font-bold text-green-600"><%= @rootein.current_streak %> days</span></p>
-    <p class="text-sm italic text-gray-400 mb-4">
-      <% if @rootein.current_streak == 0 %>
-        Don't break the chain — start today!
-      <% elsif @rootein.current_streak < 7 %>
-        Good start! Keep the momentum going.
-      <% elsif @rootein.current_streak < 21 %>
-        You're building a real habit. Stay consistent!
-      <% else %>
-        This is a rootein now. You own it!
-      <% end %>
-    </p>
-
-    <!-- Month navigation -->
-    <div class="flex items-center justify-between mb-4">
-      <%= link_to "← Prev", rootein_path(@rootein, date: @date.prev_month),
-          class: "text-blue-600 hover:underline" %>
-      <span class="font-semibold text-lg"><%= @date.strftime("%B %Y") %></span>
-      <%= link_to "Next →", rootein_path(@rootein, date: @date.next_month),
-          class: "text-blue-600 hover:underline" %>
+  <div class="flex gap-8">
+    <!-- Sidebar: rootein list -->
+    <div class="w-72 shrink-0">
+      <div class="rounded-lg overflow-hidden border border-gray-300 bg-white" data-controller="sortable">
+        <div class="bg-gray-900 text-white text-center py-2 font-semibold text-sm">My Active Rooteins</div>
+        <ul class="divide-y divide-gray-200">
+          <% @rooteins.each do |rootein| %>
+            <li class="group <%= rootein == @rootein ? 'bg-gray-100' : '' %>"
+                data-sortable-target="item"
+                data-rootein-id="<%= rootein.id %>"
+                draggable="true"
+                data-action="dragstart->sortable#dragstart dragend->sortable#dragend dragover->sortable#dragover drop->sortable#drop">
+              <%= link_to rootein_path(rootein), class: "flex items-center gap-3 px-4 py-3 hover:bg-gray-50" do %>
+                <span class="text-gray-400 cursor-grab opacity-0 group-hover:opacity-100 transition-opacity text-sm">≡</span>
+                <%= streak_badge(rootein) %>
+                <span class="flex-1">
+                  <span class="font-medium text-sm <%= rootein == @rootein ? 'text-blue-600' : 'text-gray-800' %>"><%= rootein.name %></span>
+                </span>
+                <span class="text-gray-400 text-lg">›</span>
+              <% end %>
+              <div class="flex items-center justify-end gap-1 px-4 pb-2 text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                <%= link_to "Edit", edit_rootein_path(rootein), class: "text-blue-500 hover:underline" %>
+                <span class="text-gray-400">|</span>
+                <%= button_to "Delete", rootein_path(rootein), method: :delete, class: "text-red-500 hover:underline cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
     </div>
 
-    <!-- Day-of-week headers -->
-    <div class="grid grid-cols-7 text-center text-sm font-medium text-gray-500 mb-1">
-      <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day_name| %>
-        <div><%= day_name %></div>
-      <% end %>
-    </div>
+    <!-- Main: calendar -->
+    <div class="flex-1">
+      <!-- Rootein name header -->
+      <div class="<%= streak_color(@rootein) %> text-white text-center py-3 rounded-t-lg font-bold text-xl"><%= @rootein.name %></div>
 
-    <!-- Calendar grid -->
-    <div class="grid grid-cols-7 text-center gap-1">
-      <!-- Empty cells before the 1st -->
-      <% @date.beginning_of_month.wday.times do %>
-        <div></div>
-      <% end %>
-
-      <!-- Day cells -->
-      <% (@date.beginning_of_month..@date.end_of_month).each do |day| %>
-        <% completed = @completions.include?(day) %>
-        <% if completed %>
-          <% completion = @rootein.completions.find_by(completed_on: day) %>
-          <%= button_to rootein_completion_path(@rootein, completion),
-              method: :delete,
-              class: "p-2 rounded-lg text-sm w-full bg-green-500 text-white font-bold hover:bg-green-600 cursor-pointer" do %>
-            <%= day.day %>
-          <% end %>
-        <% else %>
-          <%= button_to rootein_completions_path(@rootein),
-              params: { completed_on: day },
-              class: "p-2 rounded-lg text-sm w-full bg-gray-100 hover:bg-gray-200 cursor-pointer" do %>
-            <%= day.day %>
-          <% end %>
+      <!-- Calendar -->
+      <div class="bg-black text-white rounded-b-lg p-6">
+        <!-- Build calendar cells array -->
+        <% first_day_wday = (@date.beginning_of_month.wday - 1) % 7 %>
+        <% cells = [] %>
+        <% first_day_wday.times { cells << nil } %>
+        <% (@date.beginning_of_month..@date.end_of_month).each { |d| cells << d } %>
+        <% overflow_start = @date.end_of_month + 1.day %>
+        <% while cells.length % 7 != 0 %>
+        <%   cells << overflow_start %>
+        <%   overflow_start += 1.day %>
         <% end %>
-      <% end %>
+        <% has_overflow = cells.last && cells.last.month != @date.month %>
+
+        <!-- Month label -->
+        <div class="text-center mb-3">
+          <span class="font-bold text-xl">
+            <%= @date.strftime("%b").upcase %><% if has_overflow %> - <%= @date.next_month.strftime("%b").upcase %><% end %>
+          </span>
+        </div>
+
+        <!-- Day-of-week headers (outside the grid border) -->
+        <div class="grid grid-cols-7 text-center mb-1">
+          <% %w[M T W T F S S].each do |day_name| %>
+            <div class="font-bold text-xl text-white py-1"><%= day_name %></div>
+          <% end %>
+        </div>
+
+        <!-- Calendar grid -->
+        <style>
+          .cal-cell form { width: 100%; height: 100%; }
+          .cal-cell form button { width: 100%; height: 100%; }
+        </style>
+        <table class="w-full border-collapse border-2 border-gray-600">
+          <tbody>
+            <% cells.each_slice(7) do |week| %>
+              <tr>
+                <% week.each do |day| %>
+                  <% if day.nil? %>
+                    <td class="border border-gray-600 bg-white h-12"></td>
+                  <% else %>
+                    <% is_overflow = day.month != @date.month %>
+                    <% is_today = day == Date.today %>
+                    <% is_future = day > Date.today %>
+                    <% completed = !is_overflow && @completions.include?(day) %>
+                    <td class="cal-cell border border-gray-600 text-center align-middle h-12 p-0 <%= completed ? 'bg-green-200' : 'bg-white' %>">
+                      <% if completed %>
+                        <% completion = @rootein.completions.find_by(completed_on: day) %>
+                        <%= button_to rootein_completion_path(@rootein, completion), method: :delete,
+                            class: "cursor-pointer hover:bg-green-300 relative" do %>
+                          <span class="text-green-800 text-xl"><%= day.day %></span>
+                          <span class="absolute inset-0 flex items-center justify-center text-green-600 text-3xl font-bold">✓</span>
+                        <% end %>
+                      <% elsif is_overflow || is_future %>
+                        <div class="py-1 text-xl <%= is_today ? 'text-red-500 font-bold' : 'text-gray-300' %>">
+                          <%= day.day %>
+                        </div>
+                      <% else %>
+                        <%= button_to rootein_completions_path(@rootein), params: { completed_on: day },
+                            class: "cursor-pointer hover:bg-gray-200 #{is_today ? 'text-red-500 font-bold' : 'text-gray-800'}" do %>
+                          <span class="text-xl font-semibold"><%= day.day %></span>
+                        <% end %>
+                      <% end %>
+                    </td>
+                  <% end %>
+                <% end %>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+
+        <!-- Prev / Next navigation (below the grid) -->
+        <div class="flex items-center justify-between mt-3">
+          <%= link_to "<< prev", rootein_path(@rootein, date: @date.prev_month), class: "text-gray-400 hover:text-white text-sm" %>
+          <%= link_to "next >>", rootein_path(@rootein, date: @date.next_month), class: "text-gray-400 hover:text-white text-sm" %>
+        </div>
+
+        <!-- Motivational message -->
+        <p class="text-center mt-3 text-sm italic
+          <% if @rootein.current_streak == 0 %>text-red-400<% else %>text-green-400<% end %>">
+          <% if @rootein.current_streak == 0 %>
+            How about getting started on this Rootein already!
+          <% elsif @rootein.current_streak < 7 %>
+            You have been doing this Rootein for <%= @rootein.current_streak %> days
+          <% elsif @rootein.current_streak < 21 %>
+            You're building a real habit. Stay consistent!
+          <% else %>
+            This is a Rootein now. You own it!
+          <% end %>
+        </p>
+      </div>
     </div>
   </div>
 </div>

@@ -22,33 +22,58 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <body class="bg-gradient-to-b from-blue-100 to-gray-100 min-h-screen">
     <% if authenticated? %>
-      <nav class="bg-white border-b border-gray-200 px-5 py-3">
+      <!-- Top bar: greeting + logout -->
+      <div class="bg-black text-sm text-gray-300 px-5 py-1">
+        <div class="container mx-auto flex justify-end items-center gap-3">
+          <span>Hello <span class="text-green-400 font-semibold"><%= Current.user.name.presence || Current.user.email_address.split("@").first %></span>!</span>
+          <%= button_to "Log out", session_path, method: :delete, class: "text-blue-400 hover:underline cursor-pointer" %>
+        </div>
+      </div>
+      <!-- Main nav -->
+      <nav class="bg-gray-900 px-5 py-0">
         <div class="container mx-auto flex items-center justify-between">
-          <div class="flex items-center gap-6">
-            <%= link_to "Rootein", root_path, class: "text-xl font-bold text-green-600" %>
-            <%= link_to "My Rooteins", rooteins_path, class: "text-sm text-gray-600 hover:text-green-600" %>
-          </div>
-          <div class="flex items-center gap-4 text-sm text-gray-600">
-            <span>Hello, <%= Current.user.name.presence || Current.user.email_address.split("@").first %>!</span>
-            <%= link_to "Account", account_path, class: "text-gray-600 hover:text-green-600" %>
-            <%= button_to "Log out", session_path, method: :delete, class: "text-red-500 hover:underline cursor-pointer" %>
+          <!-- Logo -->
+          <%= link_to root_path, class: "flex items-center gap-0 py-2" do %>
+            <% %w[R O O T E I N].each do |letter| %>
+              <span class="inline-block w-8 h-8 bg-gray-800 text-blue-400 font-bold text-center leading-8 border border-gray-600 rounded text-sm"><%= letter %></span>
+            <% end %>
+          <% end %>
+          <!-- Nav tabs -->
+          <div class="flex items-end gap-1 pb-0">
+            <%
+              first_rootein = Current.user.rooteins.active.first
+              my_rooteins_link = first_rootein ? rootein_path(first_rootein) : rooteins_path
+              tabs = [
+                ["Home", root_path, controller_name == "dashboard"],
+                ["My Rooteins", my_rooteins_link, controller_name == "rooteins" && action_name == "show"],
+                ["Manage", rooteins_path, controller_name == "rooteins" && %w[index new edit].include?(action_name)],
+                ["Account", account_path, controller_name == "account"]
+              ]
+            %>
+            <% tabs.each do |label, path, active| %>
+              <% if active %>
+                <%= link_to label, path, class: "px-7 py-2.5 text-sm font-semibold rounded-t-md bg-gradient-to-b from-white to-blue-200 text-gray-800 border border-b-0 border-gray-500" %>
+              <% else %>
+                <%= link_to label, path, class: "px-7 py-2.5 text-sm font-semibold rounded-t-md bg-gradient-to-b from-gray-500 to-gray-700 text-gray-200 border border-b-0 border-gray-600 hover:from-gray-400 hover:to-gray-600" %>
+              <% end %>
+            <% end %>
           </div>
         </div>
       </nav>
     <% end %>
     <% if notice %>
-      <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 text-center text-sm">
+      <div class="bg-green-50 border-b border-green-200 text-green-800 px-4 py-3 text-center text-sm">
         <%= notice %>
       </div>
     <% end %>
     <% if alert %>
-      <div class="bg-red-50 border border-red-200 text-red-800 px-4 py-3 text-center text-sm">
+      <div class="bg-red-50 border-b border-red-200 text-red-800 px-4 py-3 text-center text-sm">
         <%= alert %>
       </div>
     <% end %>
-    <main class="container mx-auto mt-16 px-5 flex">
+    <main class="<%= controller_name == 'landing' ? '' : 'container mx-auto mt-8 px-5' %>">
       <%= yield %>
     </main>
   </body>

@@ -2,11 +2,11 @@ class RooteinsController < ApplicationController
   before_action :set_rootein, only: [:show, :edit, :update, :destroy]
 
   def index
-    @rooteins = Current.user.rooteins
+    @rooteins = Current.user.rooteins.ordered
   end
 
   def show
-    @rooteins = Current.user.rooteins.active
+    @rooteins = Current.user.rooteins.active.ordered
     @date = params[:date] ? Date.parse(params[:date]) : Date.today
     @completions = @rootein.completions
       .where(completed_on: @date.beginning_of_month..@date.end_of_month)
@@ -41,6 +41,14 @@ class RooteinsController < ApplicationController
   def destroy
     @rootein.destroy
     redirect_to rooteins_path, notice: "Rootein deleted."
+  end
+
+  def reorder
+    ids = params[:ids]
+    ids.each_with_index do |id, index|
+      Current.user.rooteins.find(id).update_columns(position: index)
+    end
+    head :ok
   end
 
   private

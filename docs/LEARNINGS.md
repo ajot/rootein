@@ -200,3 +200,106 @@ Postgres picks a random row each time. Fine for small tables (our 10 tips). For 
 
 ### Separate controllers for separate concepts
 The dashboard is its own controller, not shoehorned into `RooteinsController`. It aggregates data from multiple sources (rooteins split by status + a random tip). One controller per resource/concept is the Rails convention.
+
+---
+
+## Phase 6: My Rooteins Page
+
+### Don't extract partials prematurely
+The calendar could have been a `_calendar.html.erb` partial — but there's only one place it's used. Extracting it would add indirection (partial file, local variable passing) with zero reuse benefit. Wait until you actually need the same markup in two places before extracting. DHH philosophy: premature abstraction is worse than duplication.
+
+### Monday-start calendar grid
+`(@date.beginning_of_month.wday - 1) % 7` calculates the offset for a Monday-start calendar. Ruby's `wday` returns 0=Sunday, 1=Monday, ..., 6=Saturday. Subtracting 1 and modding by 7 shifts Sunday from 0 to 6, making Monday the first column. The `%` modulo handles the wrap-around.
+
+### Motivational messages with streak thresholds
+Instead of a single static message, the calendar show page uses `if/elsif/else` to display different messages based on `current_streak`: 0 days (get started!), 1-6 (building), 7-20 (real habit), 21+ (it's a Rootein now). Keeps users engaged at every stage. Simple conditional logic — no gem or framework needed.
+
+---
+
+## Phase 7: Account & Notifications
+
+### Sectioned update pattern — one controller, multiple forms
+`AccountController#update` uses a hidden `params[:section]` field to route to different strong parameter methods (`profile_params`, `password_params`, `notification_params`). Each form on the page submits to the same `PATCH /account` endpoint with a different section value. This avoids three separate controllers for what is conceptually one page.
+
+### `resource` (singular) vs `resources` (plural)
+`resource :account` (singular) generates routes without an `:id` parameter — there's only one account per logged-in user. But Rails pluralizes the controller name: it looks for `AccountsController`. Override with `controller: "account"` to use `AccountController` (singular, matching the concept).
+
+### `.presence` — nil-or-empty in one call
+`Current.user.name.presence || "fallback"` returns the name if it's a non-blank string, or `nil` if it's empty/nil — letting the `||` kick in. Without `.presence`, an empty string `""` is truthy and the fallback never fires. Useful for user-facing names where a blank name should fall back to email prefix.
+
+### `time_zone_select` — built-in Rails helper
+Rails ships with `time_zone_select(:user, :time_zone)` that renders a dropdown of all `ActiveSupport::TimeZone` names. No gem needed. The values match what `Time.zone=` expects, so time zone support works end-to-end.
+
+---
+
+## Phase 8: Email Reminders
+
+### Action Mailer — HTML + text templates
+Each mailer method (e.g., `rootein_reminder`) gets two templates: `.html.erb` and `.text.erb`. Rails sends a multipart email with both versions — the recipient's email client picks whichever it supports. Always provide both: some corporate clients and accessibility tools prefer plain text.
+
+### Mailer previews for development
+`test/mailers/previews/reminder_mailer_preview.rb` lets you view rendered emails at `/rails/mailers/reminder_mailer/rootein_reminder` without actually sending anything. Change the preview, reload the page — instant feedback loop. Far faster than sending test emails.
+
+### Solid Queue recurring schedule
+`config/recurring.yml` defines jobs that run on a schedule. `send_reminders: class: SendRemindersJob, schedule: "at 8am every day"` — Solid Queue handles the cron-like scheduling, no Redis or Sidekiq needed. Jobs are stored in the database and processed by Solid Queue workers.
+
+### Don't add gems until you feel the pain (DHH philosophy)
+We almost added Resend for email delivery but realized: in development, Rails uses test delivery (emails appear in the log). The gem is only needed in production. Defer it to the deployment phase. Every gem is a dependency to maintain — add them at the last responsible moment.
+
+---
+
+## Phase 9: Landing Page
+
+### `allow_unauthenticated_access` — opting out of auth
+The `Authentication` concern locks every page by default. `LandingController` and `RegistrationsController` use `allow_unauthenticated_access` to let visitors in without a session. This is the inverse of adding `before_action :authenticate_user!` per-controller — secure by default, explicit opt-out.
+
+### `start_new_session_for` — auto-login after registration
+After `User.create`, calling `start_new_session_for @user` creates a session and sets the cookie — the user lands on the dashboard already logged in. No redirect to the login page after signup. Small UX detail, big difference in perceived friction.
+
+### Separate navbar for unauthenticated pages
+The landing page needs "Log In | Register" links, not the app's nav tabs. Instead of adding conditionals to the layout navbar, the landing page renders its own navbar inside its view template. The `-mx-5 -mt-8` negative margins counteract the layout's padding so it can span full-width.
+
+---
+
+## Visual Overhaul: Matching the Original 2009 Design
+
+### View helpers with `content_tag` for reusable UI components
+`streak_badge(rootein)` in `RooteinsHelper` uses `content_tag` to build a badge (colored square with streak number + "days" label). This is used on the dashboard, index page, and show page sidebar. View helpers are the right place for reusable display logic — not models (no HTML in models), not partials (too heavy for a single HTML element).
+
+### `controller_name` and `action_name` for active state detection
+The layout navbar highlights the current tab using `controller_name == "dashboard"` to add a CSS class. Rails provides `controller_name` and `action_name` as view helpers — you don't need to pass flags from the controller. Clean way to handle active navigation states without adding instance variables.
+
+### Negative margins to break out of layout padding
+The landing page uses `-mx-5 -mt-8` to counteract the layout's `px-5 pt-8` padding. This lets a child view go full-width edge-to-edge even though the layout has padding. Common Tailwind pattern — negative margins pull the element outward by the same amount as the parent's padding.
+
+---
+
+## Drag-and-Drop Reorder
+
+### Stimulus `connect()` and `disconnect()` lifecycle
+Stimulus controllers have lifecycle callbacks: `connect()` fires when the controller's element enters the DOM, `disconnect()` fires when it leaves. In the carousel controller, `connect()` starts a `setInterval` timer; `disconnect()` calls `clearInterval` to prevent memory leaks. Always clean up timers, event listeners, and subscriptions in `disconnect()`.
+
+### HTML5 Drag and Drop API — no library needed
+The browser's built-in drag-and-drop uses four events: `dragstart` (user grabs an item), `dragover` (item hovers over a drop target — must call `preventDefault()` to allow dropping), `drop` (item is released), and `dragend` (cleanup). The `sortable_controller.js` uses `getBoundingClientRect()` to detect if the dragged item should go above or below the target based on the cursor's Y position relative to the element's midpoint.
+
+### `update_columns` — bypass validations for bulk updates
+`rootein.update_columns(position: index)` writes directly to the database without running validations, callbacks, or updating `updated_at`. This is intentional for the reorder endpoint — we're only changing sort position, and running full model validations on every item in the list would be wasteful. Use `update_columns` when you're certain the data is valid and you need speed.
+
+### Collection routes — actions on the group, not one record
+`collection { patch :reorder }` inside `resources :rooteins` creates `PATCH /rooteins/reorder` — an action on the collection (all rooteins), not a member (one rootein). Compare with `member { get :archive }` which creates `GET /rooteins/:id/archive`. Use collection routes when the action doesn't operate on a single record.
+
+### CSRF tokens in `fetch()` requests
+Rails rejects non-GET requests without a valid CSRF token. In the sortable controller, `fetch()` must include the `X-CSRF-Token` header, pulled from the `<meta name="csrf-token">` tag that Rails injects into the layout. Without it, the server returns `422 Unprocessable Entity`. Turbo and `button_to` handle this automatically — manual `fetch()` requires explicit inclusion.
+
+### Stimulus targets — `data-*-target` attribute convention
+`data-carousel-target="slide"` registers an element as a target. In the controller, `this.slideTargets` returns an array of all matching elements. The naming convention is `data-[controller]-target="[name]"`. Declared with `static targets = ["slide"]` at the top of the controller class. Targets are the Stimulus way to reference DOM elements without `querySelector`.
+
+---
+
+## Landing Page Polish
+
+### Auto-cycling carousel with `setInterval`
+The carousel controller cycles through images every 2 seconds using `setInterval`. Each tick hides the current slide (`classList.add("hidden")`) and shows the next. Modulo arithmetic (`(this.index + 1) % this.slideTargets.length`) wraps around to the first slide after the last. All slides except the first start with `class="hidden"` in the HTML.
+
+### Full-bleed backgrounds with constrained content
+A common responsive pattern: outer `<div>` elements carry full-width backgrounds (gradients, colors, borders) while inner `container mx-auto max-w-5xl` divs cap the content at 1024px. Tailwind's `container` sets `width: 100%` with responsive max-widths at each breakpoint. Adding `max-w-5xl` overrides the larger breakpoints (like `xl: 1280px`) with a hard 1024px ceiling.

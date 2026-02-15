@@ -6,6 +6,9 @@ Rails.application.routes.draw do
   root "dashboard#show"
   resource :account, only: [:show, :update], controller: "account"
   resources :rooteins do
+    collection do
+      patch :reorder
+    end
     resources :completions, only: [:create, :destroy]
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

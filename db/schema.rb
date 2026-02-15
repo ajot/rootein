@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_14_135505) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_15_014210) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -31,6 +31,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_14_135505) do
     t.boolean "active", default: true, null: false
     t.time "reminder_time"
     t.boolean "remind_on_slack", default: false, null: false
+    t.integer "position", default: 0
     t.index ["user_id"], name: "index_rooteins_on_user_id"
   end
 
