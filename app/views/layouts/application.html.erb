@@ -94,8 +94,8 @@
     <main class="<%= controller_name == 'landing' ? '' : "container mx-auto mt-8 px-5 #{'max-w-5xl' if controller_name.in?(%w[sessions registrations passwords about])}" %>">
       <%= yield %>
     </main>
-    <footer class="mt-12 py-4 text-center text-xs text-gray-400">
-      Built with Claude Opus 4.6
+    <footer class="bg-gray-100 border-t border-gray-200 px-5 py-4 mt-12 text-center text-xs text-gray-400">
+      Originally built with Rails 2.3 in 2009. Rebuilt with Rails 8 in 2026. Powered by Claude Opus 4.6. <%= link_to "Our story →", about_path, class: "text-blue-500 hover:underline" %>
     </footer>
   </body>
 </html>
