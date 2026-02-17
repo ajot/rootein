@@ -10,17 +10,11 @@ class SendRemindersJob < ApplicationJob
         end
 
         # Slacking alert for 3+ days missed
-        if rootein.current_streak == 0 && days_since_last(rootein) >= 3
+        if rootein.current_streak == 0 && rootein.days_since_last_completion >= 3
           ReminderMailer.slacking_alert(user, rootein).deliver_later
         end
       end
     end
   end
 
-  private
-
-  def days_since_last(rootein)
-    last = rootein.completions.order(completed_on: :desc).first
-    last ? (Date.today - last.completed_on).to_i : 999
-  end
 end

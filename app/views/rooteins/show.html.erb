@@ -71,10 +71,6 @@
         </div>
 
         <!-- Calendar grid -->
-        <style>
-          .cal-cell form { width: 100%; height: 100%; }
-          .cal-cell form button { width: 100%; height: 100%; }
-        </style>
         <table class="w-full border-collapse border-2 border-gray-600">
           <tbody>
             <% cells.each_slice(7) do |week| %>
@@ -87,11 +83,12 @@
                     <% is_today = day == Date.today %>
                     <% is_future = day > Date.today %>
                     <% completed = !is_overflow && @completions.include?(day) %>
-                    <td class="cal-cell border border-gray-600 text-center align-middle h-12 p-0 <%= completed ? 'bg-green-200' : 'bg-white' %>">
+                    <td class="border border-gray-600 text-center align-middle h-12 p-0 <%= completed ? 'bg-green-200' : 'bg-white' %>">
                       <% if completed %>
                         <% completion = @rootein.completions.find_by(completed_on: day) %>
                         <%= button_to rootein_completion_path(@rootein, completion), method: :delete,
-                            class: "cursor-pointer hover:bg-green-300 relative" do %>
+                            form: { class: "w-full h-full" },
+                            class: "w-full h-full cursor-pointer hover:bg-green-300 relative" do %>
                           <span class="text-green-800 text-xl"><%= day.day %></span>
                           <span class="absolute inset-0 flex items-center justify-center text-green-600 text-3xl font-bold">✓</span>
                         <% end %>
@@ -101,7 +98,8 @@
                         </div>
                       <% else %>
                         <%= button_to rootein_completions_path(@rootein), params: { completed_on: day },
-                            class: "cursor-pointer hover:bg-gray-200 #{is_today ? 'text-red-500 font-bold' : 'text-gray-800'}" do %>
+                            form: { class: "w-full h-full" },
+                            class: "w-full h-full cursor-pointer hover:bg-gray-200 #{is_today ? 'text-red-500 font-bold' : 'text-gray-800'}" do %>
                           <span class="text-xl font-semibold"><%= day.day %></span>
                         <% end %>
                       <% end %>
