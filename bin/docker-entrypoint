@@ -9,8 +9,10 @@ fi
 # Prepare database — handles both direct and sh -c wrapped invocations
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
+  ./bin/rails db:migrate:queue db:migrate:cache db:migrate:cable 2>/dev/null || true
 elif echo "$@" | grep -q "rails server"; then
   ./bin/rails db:prepare
+  ./bin/rails db:migrate:queue db:migrate:cache db:migrate:cable 2>/dev/null || true
 fi
 
 exec "${@}"
