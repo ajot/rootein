@@ -1,5 +1,12 @@
 class DashboardController < ApplicationController
+  allow_unauthenticated_access
+
   def show
+    unless authenticated?
+      render "landing/show"
+      return
+    end
+
     rooteins = Current.user.rooteins.active
     @slacking = rooteins.slacking
     @on_target = rooteins.on_target

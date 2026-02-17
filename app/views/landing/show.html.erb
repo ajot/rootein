@@ -1,22 +1,5 @@
 <!-- Landing page (full-width) -->
 <div>
-  <!-- Single navbar: logo + Log In | Register -->
-  <nav class="bg-gray-900 px-5 py-0">
-    <div class="container mx-auto max-w-5xl flex items-center justify-between">
-      <div class="flex items-center gap-0 py-2">
-        <% %w[R O O T E I N].each do |letter| %>
-          <span class="inline-block w-8 h-8 bg-gray-800 text-blue-400 font-bold text-center leading-8 border border-gray-600 rounded text-sm"><%= letter %></span>
-        <% end %>
-        <sup class="text-white text-xs ml-1 font-semibold">BETA</sup>
-      </div>
-      <div class="flex items-center gap-3 text-sm">
-        <%= link_to "Log In", new_session_path, class: "text-blue-400 hover:underline" %>
-        <span class="text-gray-500">|</span>
-        <%= link_to "Register", new_registration_path, class: "text-blue-400 hover:underline" %>
-      </div>
-    </div>
-  </nav>
-
   <!-- Hero section -->
   <div class="bg-gradient-to-br from-blue-50 via-blue-200 to-blue-400 px-5 py-12">
     <div class="container mx-auto max-w-5xl flex items-start gap-12">

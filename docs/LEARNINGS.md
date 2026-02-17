@@ -324,3 +324,25 @@ The carousel controller cycles through images every 2 seconds using `setInterval
 
 ### Full-bleed backgrounds with constrained content
 A common responsive pattern: outer `<div>` elements carry full-width backgrounds (gradients, colors, borders) while inner `container mx-auto max-w-5xl` divs cap the content at 1024px. Tailwind's `container` sets `width: 100%` with responsive max-widths at each breakpoint. Adding `max-w-5xl` overrides the larger breakpoints (like `xl: 1280px`) with a hard 1024px ceiling.
+
+---
+
+## Deployment: DigitalOcean App Platform + PostgreSQL
+
+### Supabase PgBouncer and `prepared_statements: false`
+Supabase exposes database connections through PgBouncer in **transaction mode**. In this mode, your app's connection gets routed to different PostgreSQL backends between transactions. Rails' prepared statements (named `"a1"`, `"a2"`, etc.) are tied to a specific backend — when PgBouncer routes to a backend that already has a statement with that name from another session, PostgreSQL raises `PG::DuplicatePstatement: ERROR: prepared statement "a1" already exists`. The fix is `prepared_statements: false` in `database.yml`. But Supabase's pooled connection also resolved to IPv6, which DO App Platform couldn't route — so we switched to a DO managed PostgreSQL database, which uses direct connections and doesn't need this workaround.
+
+### Removing gems vs removing config — both matter
+Rails 8 ships with `solid_queue`, `solid_cache`, and `solid_cable` as defaults. When we switched to in-process alternatives (`config.active_job.queue_adapter = :async`, `config.cache_store = :memory_store`, `adapter: async` for cable), the *config* was correct but the *gems* were still in the Gemfile. The `solid_queue` gem ships a **Puma plugin** (`plugin :solid_queue`) that starts independently of the job adapter config — it forks a supervisor process that tries to register in the `solid_queue_processes` table. On a fresh database without Solid Queue migrations, this crashes with `PG::UndefinedTable`. Lesson: when removing a Rails feature, remove the gem too — config alone isn't enough if the gem has side effects like Puma plugins.
+
+### Collateral damage in multi-file commits
+Commit `a1ce884` ("Remove Solid Queue/Cache/Cable from production") touched `database.yml` to remove the separate database entries for Solid Queue — but also accidentally removed the `prepared_statements: false` line that was added in the previous commit. When a commit touches multiple files, each diff should be reviewed independently. A line that looks like cleanup in one context may be a critical fix added by a different commit.
+
+### Health check timing — first deploy is the slowest
+On the first deploy, `db:prepare` runs all migrations from scratch (~60s), then Rails eager-loads every class (~50s on a small DO instance). Total boot: ~140 seconds. DO's default health check (9 failures × 30s period = 270s) starts counting from container start, not from when Puma begins listening. Our app was ready at 140s but the health check had already failed at 136s — 4 seconds short. Fix: increase **Initial Delay** (skip checking during db:prepare) and **Failure Threshold** (allow more retries). Subsequent deploys are much faster since `db:prepare` is a near-instant no-op when there are no pending migrations.
+
+### `RAILS_MASTER_KEY` — the credentials decryption key
+Rails stores secrets in `config/credentials.yml.enc`, encrypted with the key in `config/master.key` (locally) or the `RAILS_MASTER_KEY` env var (in production). If the key is missing, Rails raises `Missing encryption key`. If the key is present but *wrong* (copy-paste whitespace, old key), Rails raises `ActiveSupport::MessageEncryptor::InvalidMessage`. The error message doesn't tell you the key is wrong — it just says decryption failed. Always double-check for trailing spaces or newlines when setting this env var.
+
+### The layered-failure pattern in platform migrations
+Deploying to a new platform often surfaces issues in layers, each masking the next: (1) Supabase prepared statements error → (2) Solid Queue missing tables error → (3) Health check timeout. Each fix revealed the next problem underneath. "Same error after fix" doesn't always mean the fix was wrong — sometimes it worked but uncovered a different failure with similar symptoms (app crashing before health checks pass). Patience and reading the *specific* error message matters.

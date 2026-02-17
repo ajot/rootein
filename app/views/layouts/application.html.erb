@@ -59,10 +59,10 @@
           </div>
         </div>
       </nav>
-    <% elsif controller_name != "landing" %>
+    <% elsif !authenticated? %>
       <nav class="bg-gray-900 px-5 py-0">
-        <div class="container mx-auto flex items-center justify-between">
-          <%= link_to landing_path, class: "flex items-center gap-0 py-2" do %>
+        <div class="container mx-auto max-w-5xl flex items-center justify-between">
+          <%= link_to root_path, class: "flex items-center gap-0 py-2" do %>
             <% %w[R O O T E I N].each do |letter| %>
               <span class="inline-block w-8 h-8 bg-gray-800 text-blue-400 font-bold text-center leading-8 border border-gray-600 rounded text-sm"><%= letter %></span>
             <% end %>
@@ -88,10 +88,10 @@
         <%= alert %>
       </div>
     <% end %>
-    <main class="<%= controller_name == 'landing' ? '' : "container mx-auto mt-8 px-5 #{'max-w-5xl' if controller_name.in?(%w[sessions registrations passwords about])}" %>">
+    <main class="<%= !authenticated? && controller_name == 'dashboard' ? '' : "container mx-auto mt-8 px-5 #{'max-w-5xl' if controller_name.in?(%w[sessions registrations passwords about])}" %>">
       <%= yield %>
     </main>
-    <footer class="bg-gray-100 border-t border-gray-200 px-5 py-4 mt-12 text-center text-xs text-gray-400">
+    <footer class="bg-gray-100 border-t border-gray-200 px-5 py-4 <%= 'mt-12' unless !authenticated? && controller_name == 'dashboard' %> text-center text-xs text-gray-400">
       Originally built with Rails 2.3 in 2009. Rebuilt with Rails 8 in 2026. Powered by Claude Opus 4.6. <%= link_to "Our story →", about_path, class: "text-blue-500 hover:underline" %>
     </footer>
   </body>
