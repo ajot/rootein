@@ -6,9 +6,13 @@ if [ -z "${LD_PRELOAD+x}" ]; then
     export LD_PRELOAD
 fi
 
-# Always prepare database on startup
+# Prepare database with retries (Supabase pool may be full during deploys)
 echo "==> Running db:prepare..."
-./bin/rails db:prepare
+for i in 1 2 3 4 5; do
+  ./bin/rails db:prepare && break
+  echo "==> db:prepare attempt $i failed, retrying in 5s..."
+  sleep 5
+done
 echo "==> db:prepare complete"
 
 exec "${@}"
