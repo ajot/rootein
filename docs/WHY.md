@@ -1,4 +1,4 @@
-# rootein-again
+# Rootein '26
 
 > Document your vision and intent before writing code.
 > Created 2026-02-13 with [mint-cli](https://github.com/ajotwani/mint-cli)

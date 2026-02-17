@@ -3,7 +3,7 @@
   <div class="notebook rounded-lg overflow-hidden">
     <!-- Title header inside the notebook -->
     <div class="bg-white px-10 py-8 text-center border-b border-gray-200">
-      <h1 class="text-3xl font-bold text-gray-900 tracking-wide">The Rootein Story</h1>
+      <h1 class="text-3xl font-bold text-gray-900 tracking-wide">The Backstory</h1>
       <p class="text-gray-500 mt-2 text-sm">A habit tracker, built twice.</p>
     </div>
 
@@ -38,7 +38,7 @@
         </p>
 
         <p class="text-lg text-gray-800 leading-relaxed mt-6">
-          <strong>Kunal and I</strong> built the original Rootein over a few months — Ruby on Rails, hand-written CSS, no frameworks, no shortcuts. We were learning as we went, making every decision together, writing every line by hand.
+          <strong><a href="https://x.com/duak" target="_blank" class="text-blue-600 hover:underline">Kunal</a> and I</strong> built the <a href="https://www.youtube.com/watch?v=o9JG7v2G0KA" target="_blank" class="text-blue-600 hover:underline">original Rootein</a> over a few months — Ruby on Rails, hand-written CSS, no frameworks, no shortcuts. We were learning as we went, making every decision together, writing every line by hand.
         </p>
 
         <p class="text-lg text-gray-800 leading-relaxed mt-6">
@@ -77,27 +77,23 @@
         </div>
 
         <p class="text-lg text-gray-800 leading-relaxed">
-          <strong>Seventeen years later, I rebuilt it.</strong> Same look. Same feel. Most of the same functionality. But this time, what took months took hours.
+          <strong>Seventeen years later, I dusted it off.</strong> Partly to bring Rootein back to life, partly as an excuse to write Ruby again and see what's new with Rails. Same look. Same feel. But this time, <span class="bg-orange-400/30 text-gray-800 font-semibold italic px-1 rounded">what took months, took hours</span>.
         </p>
 
         <p class="text-lg text-gray-800 leading-relaxed mt-6">
-          I took Claude's help — but I read and typed every single line of code for the basic scaffolding: models, controllers, authentication, routes. I wanted to understand what I was building, not just ship it.
+          I handled the early scaffolding — generating controllers, models, migrations — and made all the tech stack choices: Rails 8, Hotwire, Tailwind, PostgreSQL, deployed on <a href="https://www.digitalocean.com/products/app-platform" target="_blank" class="text-blue-600 hover:underline">DigitalOcean App Platform</a>. No frontend frameworks. No unnecessary gems. Just Rails, the <a href="https://x.com/dhh" target="_blank" class="text-blue-600 hover:underline">DHH</a> way.
         </p>
 
         <p class="text-lg text-gray-800 leading-relaxed mt-6">
-          Then I let Claude drive. We paired on the UI, the calendar logic, the drag-and-drop, the email reminders. I was involved in every stack decision we made — Rails 8, Hotwire, Tailwind, Solid Queue, PostgreSQL. No SPAs. No unnecessary gems. Just Rails, the DHH way.
+          Then I let <span class="bg-orange-400/30 text-gray-800 font-semibold px-1 rounded">Claude Opus 4.6</span> drive. It built the UI, the calendar logic, drag-and-drop reordering, email reminders, and this very page you're reading.
         </p>
 
         <p class="text-lg text-gray-800 leading-relaxed mt-6">
-          The result is what you see here: a faithful rebuild of a 2009 side project, brought back to life with modern tools and an AI copilot.
-        </p>
-
-        <p class="text-xl font-semibold text-gray-900 mt-8">
-          Same vision. New era.
+          It's free, it works, and it's weirdly fun to check off days. <%= link_to "Try it", new_registration_path, class: "text-blue-600 hover:underline font-semibold" %>.
         </p>
 
         <p class="text-sm text-gray-500 mt-8">
-          — Amit, February 2026
+          — <a href="https://x.com/amit" target="_blank" class="text-blue-600 hover:underline">Amit</a>, February 2026
         </p>
       </div>
     </div>
@@ -107,22 +103,22 @@
   <div class="bg-white shadow-md rounded-lg mt-8 px-10 py-8">
     <p class="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-4">The Receipts</p>
     <p class="text-gray-600 leading-relaxed mb-6">
-      We kept notes along the way. Every decision, every lesson, every phase of the plan — it's all in the repo.
+      Claude and I kept notes along the way. Every decision, every lesson, every phase of the plan — it's all in the <a href="https://github.com/ajot/rootein" target="_blank" class="text-blue-600 hover:underline">repo</a>.
     </p>
     <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <a href="https://github.com/ajotwani/rootein-again/blob/main/docs/WHY.md" target="_blank" class="block border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow transition">
+      <a href="https://github.com/ajot/rootein/blob/main/docs/WHY.md" target="_blank" class="block border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow transition">
         <p class="font-semibold text-gray-800">WHY.md</p>
         <p class="text-sm text-gray-500 mt-1">The vision — why this exists and what it's intentionally not solving.</p>
       </a>
-      <a href="https://github.com/ajotwani/rootein-again/blob/main/docs/PLAN.md" target="_blank" class="block border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow transition">
+      <a href="https://github.com/ajot/rootein/blob/main/docs/PLAN.md" target="_blank" class="block border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow transition">
         <p class="font-semibold text-gray-800">PLAN.md</p>
         <p class="text-sm text-gray-500 mt-1">The build plan — 10 phases from "one rootein in the database" to deployment.</p>
       </a>
-      <a href="https://github.com/ajotwani/rootein-again/blob/main/docs/DECISIONS.md" target="_blank" class="block border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow transition">
+      <a href="https://github.com/ajot/rootein/blob/main/docs/DECISIONS.md" target="_blank" class="block border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow transition">
         <p class="font-semibold text-gray-800">DECISIONS.md</p>
         <p class="text-sm text-gray-500 mt-1">Every stack decision, logged as we made them. Rails 8, no Devise, no SPA.</p>
       </a>
-      <a href="https://github.com/ajotwani/rootein-again/blob/main/docs/LEARNINGS.md" target="_blank" class="block border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow transition">
+      <a href="https://github.com/ajot/rootein/blob/main/docs/LEARNINGS.md" target="_blank" class="block border border-gray-200 rounded-lg p-4 hover:border-blue-400 hover:shadow transition">
         <p class="font-semibold text-gray-800">LEARNINGS.md</p>
         <p class="text-sm text-gray-500 mt-1">What I learned — Rails concepts, DHH philosophy, gotchas, and patterns.</p>
       </a>

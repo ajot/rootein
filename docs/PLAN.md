@@ -1,4 +1,4 @@
-# Rootein — Build Plan
+# Rootein '26 — Build Plan
 
 > Rebuild of the original Rootein habit tracker (2009) with Rails 8, Hotwire, and Tailwind CSS.
 > Philosophy: start with the smallest thing that works, add complexity only when you feel the pain.

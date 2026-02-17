@@ -1,4 +1,4 @@
-# Rootein — Learnings
+# Rootein '26 — Learnings
 
 > Things I learned while building Rootein. Insights, gotchas, and Rails concepts explained.
 

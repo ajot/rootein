@@ -92,7 +92,7 @@
       <%= yield %>
     </main>
     <footer class="bg-gray-100 border-t border-gray-200 px-5 py-4 <%= 'mt-12' unless !authenticated? && controller_name == 'dashboard' %> text-center text-xs text-gray-400">
-      Originally built with Rails 2.3 in 2009. Rebuilt with Rails 8 in 2026. Powered by Claude Opus 4.6. <%= link_to "Our story →", about_path, class: "text-blue-500 hover:underline" %>
+      <%= link_to "Originally", "https://www.youtube.com/watch?v=o9JG7v2G0KA", class: "text-blue-500 hover:underline", target: "_blank" %> built by <%= link_to "Amit", "https://x.com/amit", class: "text-blue-500 hover:underline", target: "_blank" %> and <%= link_to "Kunal", "https://x.com/duak", class: "text-blue-500 hover:underline", target: "_blank" %> in 2009.<br>Rebuilt in 2026 with some help from <span class="bg-orange-400/30 text-gray-700 font-semibold px-1 rounded">Claude Opus 4.6</span>. <%= link_to "The backstory →", about_path, class: "text-blue-500 hover:underline" %>
     </footer>
   </body>
 </html>

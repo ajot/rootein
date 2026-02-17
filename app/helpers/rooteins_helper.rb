@@ -2,9 +2,9 @@ module RooteinsHelper
   def streak_color(rootein)
     streak = rootein.current_streak
     if streak >= 21
-      "bg-green-500 border-green-600"
+      "bg-yellow-500 border-yellow-600"
     elsif streak > 0
-      "bg-orange-400 border-orange-500"
+      "bg-green-500 border-green-600"
     else
       "bg-red-500 border-red-600"
     end

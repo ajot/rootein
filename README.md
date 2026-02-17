@@ -57,8 +57,8 @@ No frontend frameworks. No unnecessary gems. Just Rails, the [DHH](https://x.com
 
 ```bash
 # Clone the repo
-git clone https://github.com/ajotwani/rootein-again.git
-cd rootein-again
+git clone https://github.com/ajot/rootein.git
+cd rootein
 
 # Install dependencies, create DB, run migrations
 bin/setup

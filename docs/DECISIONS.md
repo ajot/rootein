@@ -1,4 +1,4 @@
-# rootein-again - Decisions
+# Rootein '26 - Decisions
 
 > Log the decisions you make as you build.
 > Created 2026-02-13 with [mint-cli](https://github.com/ajotwani/mint-cli)
