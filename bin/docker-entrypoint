@@ -6,11 +6,9 @@ if [ -z "${LD_PRELOAD+x}" ]; then
     export LD_PRELOAD
 fi
 
-# Prepare database — handles both direct and sh -c wrapped invocations
-if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
-  ./bin/rails db:prepare
-elif echo "$@" | grep -q "rails server"; then
-  ./bin/rails db:prepare
-fi
+# Always prepare database on startup
+echo "==> Running db:prepare..."
+./bin/rails db:prepare
+echo "==> db:prepare complete"
 
 exec "${@}"
